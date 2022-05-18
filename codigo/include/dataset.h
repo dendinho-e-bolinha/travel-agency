@@ -4,28 +4,14 @@
 #include <string>
 #include <fstream>
 
-#include "entities/bus.h"
+#include "graph.h"
 
 using FileEntry = std::vector<unsigned long>;
 
 /** @brief Manages file operations */
 class File {
 
-    std::vector<unsigned long> columns;
-
-    /**
-     * @brief Number of nodes
-     * 
-     */
-    unsigned long nodes;
-
-    /**
-     * @brief Number of vehicles
-     * 
-     */
-    unsigned long vehicles;
-
-    void parse_header();
+    std::vector<unsigned long> header;  // meter file entry aqui? ou não fica explicito?
     
     /** @brief Vector containing all entry data */
     std::vector<FileEntry> entries;
@@ -59,8 +45,12 @@ public:
      */
     File(std::string path, char delim = ' ');
 
-    unsigned long get_nodes() const;
-    unsigned long get_vehicles() const;
+    /**
+     * @brief Get the header object
+     * 
+     * @return std::vector<unsigned long> 
+     */
+    std::vector<unsigned long> get_header() const;
 
     /**
      * @brief Get the entries object
@@ -69,6 +59,6 @@ public:
      */
     std::vector<FileEntry> get_entries() const;
 
-    std::vector<Bus> read_buses() const;
+    std::vector<Edge> read_edges() const;
 };
 
