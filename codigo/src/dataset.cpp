@@ -25,9 +25,9 @@ bool File::read_header(ifstream &file, char delim) {
         return false;
     }
 
-    istringstream header(line);
-    while(getline(header, line, delim))  {
-        columns.push_back(stoi(line));
+    istringstream stream(line);
+    while(getline(stream, line, delim))  {
+        header.push_back(stoi(line));
     }
 
     return true;
@@ -51,30 +51,10 @@ bool File::read_body(ifstream &file, char delim) {
     return true;
 }
 
-unsigned long File::get_nodes() const {
-    return nodes;
-}
-
-unsigned long File::get_vehicles() const {
-    return vehicles;
-}
-
-void File::parse_header() {
-    this->nodes = columns.at(0);
-    this->vehicles = columns.at(1);
+vector<unsigned long> File::get_header() const {
+    return header;
 }
 
 vector<FileEntry> File::get_entries() const {
     return entries;    
-}
-
-vector<Bus> File::read_buses() const {
-    vector<Bus> buses;
-
-    for (FileEntry entry : this->get_entries()) {
-        Bus delivery = Bus::from_entry(entry);
-        buses.push_back(delivery);
-    }
-
-    return buses;
 }

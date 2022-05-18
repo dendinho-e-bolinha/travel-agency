@@ -4,29 +4,16 @@
 #include <string>
 #include <fstream>
 
-#include "entities/bus.h"
-
 using FileEntry = std::vector<unsigned long>;
+class File;
+
+#include "entities/graph.h"
 
 /** @brief Manages file operations */
 class File {
 
-    std::vector<unsigned long> columns;
+    std::vector<unsigned long> header;
 
-    /**
-     * @brief Number of nodes
-     * 
-     */
-    unsigned long nodes;
-
-    /**
-     * @brief Number of vehicles
-     * 
-     */
-    unsigned long vehicles;
-
-    void parse_header();
-    
     /** @brief Vector containing all entry data */
     std::vector<FileEntry> entries;
 
@@ -59,16 +46,18 @@ public:
      */
     File(std::string path, char delim = ' ');
 
-    unsigned long get_nodes() const;
-    unsigned long get_vehicles() const;
+    /**
+     * @brief Reads the header from the target file
+     * 
+     * @return A vector holding the header values
+     */
+    std::vector<unsigned long> get_header() const;
 
     /**
-     * @brief Get the entries object
+     * @brief Reads all the entries from the target file
      * 
-     * @return std::vector<FileEntry> 
+     * @return A vector holding all the entries
      */
     std::vector<FileEntry> get_entries() const;
-
-    std::vector<Bus> read_buses() const;
 };
 
