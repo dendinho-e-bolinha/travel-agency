@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20.2)
-project(proj2)
+project(travel)
 
 add_subdirectory(codigo)
 

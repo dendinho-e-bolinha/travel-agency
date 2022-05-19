@@ -10,8 +10,8 @@ This project uses [cmake](https://cmake.org/). Assuming it's installed and prope
 
 1. `cmake -S . -B build` in this project's directory to generate the build system.
 2. To build the project's documentation, run `cmake --build build --target documentacao`.
-3. To build the project's executable, run `cmake --build build --config Release --target travel-agency`.
-   - The executable can be found under the `build/codigo/` directory, with the name `travel-agency`.
+3. To build the project's executable, run `cmake --build build --config Release --target travel`.
+   - The executable can be found under the `build/codigo/` directory, with the name `travel`.
 
 **Warning:** Execute these commands on the root of the repository (where the codigo, documentacao, input and apresentacao folders are located at)! 
 
@@ -29,6 +29,6 @@ Simply run the executable generated in the last section. Don't forget to put you
 
 This repository is for archival and educational purposes only.
 
-If you don't understand some part of the code or anything else in this repo, feel free to ask (although I may not understand it myself anymore).
+If you don't understand some part of the code or anything else in this repo, feel free to ask (although we may not understand it anymore).
 
 Keep in mind that this repo is public. If you copy any code and use it in your school projects you may be flagged for plagiarism by automated tools.
