@@ -10,15 +10,12 @@ struct Node {
     std::list<Edge> adj;
 
     bool visited;
-    unsigned long transbordos;
+    unsigned long distance;
     unsigned long capacity;
 };
 
 /** @brief Manages a Edge */
 class Edge {
-
-    /** @brief The Edge' origin */
-    unsigned long origin;
 
     /** @brief The Edge' destination */
     unsigned long destination;
@@ -34,12 +31,11 @@ class Edge {
         /**
          * @brief Construct a new Edge object
          * 
-         * @param origin The Edge' origin
          * @param destination The Edge' destination
          * @param capacity The Edge' capacity
          * @param duration The trip's duration
          */
-        Edge(unsigned long origin, unsigned long destination, unsigned long capacity, unsigned long duration);
+        Edge(unsigned long destination, unsigned long capacity, unsigned long duration);
 
         /**
          * @brief Edge copy constructor
@@ -63,7 +59,6 @@ class Edge {
         static std::vector<Edge> from_file(File file);
 
         /** Getters */
-        unsigned long get_origin() const;
         unsigned long get_destination() const;
         unsigned long get_capacity() const;
         unsigned long get_duration() const;
@@ -90,28 +85,44 @@ class Graph {
          */
         Graph(Graph &g);
 
-        // /**
-        //  * @brief Breadth-first searches the graph
-        //  * 
-        //  * @param a The origin Node
-        //  */
-        // void bfs(Node &a);
-
-        void dijkstra(unsigned long &start);
-
         /**
-         * @brief Calculates the path that maximizes group capacity
+         * @brief Alters the graph to contain information about the maximum capacity path
          * 
          * @param start The starting point
-         * @return The optimal path
+         */
+        void capacity_dijkstra(unsigned long &start);
+
+        /**
+         * @brief Alters the graph to contain information about the minimum distance path
+         * 
+         * @param start The starting path
+         */
+        void min_distance_dijkstra(unsigned long &start);
+
+        /**
+         * @brief Calculates the optimal path between two points
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @return A list containing all the nodes in the path
+         */
+        std::list<unsigned long> get_path(unsigned long &start, unsigned long &end);
+
+        /**
+         * @brief Calculates the path that holds the most people in a group
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @return A list containing all the nodes in the optimal path
          */
         std::list<unsigned long> get_max_capacity_path(unsigned long &start, unsigned long &end);
 
         /**
-         * @brief Calculates the path that minimizes transbordos
+         * @brief Calculates the path that requires least bus transfers
          * 
          * @param start The starting point
-         * @return The optimal path
+         * @param end The ending point
+         * @return A list containing all the nodes in the optimal path
          */
-        std::list<unsigned long> get_min_transbordos_path(unsigned long &start);
+        std::list<unsigned long> get_min_distance_path(unsigned long &start, unsigned long &end);
 };

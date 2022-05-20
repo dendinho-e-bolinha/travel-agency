@@ -11,8 +11,8 @@ using FileEntry = std::vector<unsigned long>;
 /** @brief Manages file operations */
 class File {
 
-    std::vector<unsigned long> header;  // meter file entry aqui? ou não fica explicito?
-    
+    std::vector<unsigned long> header;
+
     /** @brief Vector containing all entry data */
     std::vector<FileEntry> entries;
 
@@ -46,19 +46,24 @@ public:
     File(std::string path, char delim = ' ');
 
     /**
-     * @brief Get the header object
+     * @brief Reads the header from the target file
      * 
-     * @return std::vector<unsigned long> 
+     * @return A vector holding the header values
      */
     std::vector<unsigned long> get_header() const;
 
     /**
-     * @brief Get the entries object
+     * @brief Reads all the entries from the target file
      * 
-     * @return std::vector<FileEntry> 
+     * @return A vector holding all the entries
      */
     std::vector<FileEntry> get_entries() const;
 
+    /**
+     * @brief Reads all the edges from the target file
+     * 
+     * @return A vector containing all the Edges
+     */
     std::vector<Edge> read_edges() const;
 };
 

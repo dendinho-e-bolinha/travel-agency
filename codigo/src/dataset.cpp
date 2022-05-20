@@ -72,12 +72,12 @@ vector<FileEntry> File::get_entries() const {
 }
 
 vector<Edge> File::read_edges() const {
-    vector<Edge> Edgees;
+    vector<Edge> edges;
 
     for (FileEntry entry : this->get_entries()) {
         Edge delivery = Edge::from_entry(entry);
-        Edgees.push_back(delivery);
+        edges.push_back(delivery);
     }
 
-    return Edgees;
+    return edges;
 }
