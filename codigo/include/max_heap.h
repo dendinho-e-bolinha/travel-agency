@@ -50,10 +50,10 @@ void MaxHeap<K,V>::up_heap(int i) {
 // Make a value go "down the tree" until it reaches its position
 template <class K, class V>
 void MaxHeap<K,V>::down_heap(int i) {
-    while (LEFT(i) >= size) { // while within heap limits
+    while (LEFT(i) <= size) { // while within heap limits
         int j = LEFT(i);
-        if (RIGHT(i)<=size && a[RIGHT(i)].value < a[j].value) j = RIGHT(i); // choose smaller child
-        if (a[i].value < a[j].value) break;   // node already smaller than children, stop
+        if (RIGHT(i)<=size && a[RIGHT(i)].value > a[j].value) j = RIGHT(i); // choose smaller child
+        if (a[i].value > a[j].value) break;   // node already smaller than children, stop
         swap(i, j);                    // otherwise, swap with smaller child
         i = j;
     }
