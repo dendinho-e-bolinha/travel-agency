@@ -63,7 +63,7 @@ bool File::read_body(ifstream &file, char delim) {
     return true;
 }
 
-vector<unsigned long> File::get_header()const {
+vector<unsigned long> File::get_header() const {
     return header;
 }
 
