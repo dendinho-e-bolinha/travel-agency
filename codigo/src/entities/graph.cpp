@@ -55,7 +55,7 @@ Graph::Graph(Graph &g) {
     this->nodes = g.nodes;
 }
 
-void Graph::capacity_dijkstra(unsigned long &start) {
+void Graph::max_capacity_dijkstra(unsigned long &start) {
     for (unsigned long i = 0; i < nodes.size(); i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
@@ -126,13 +126,13 @@ list<unsigned long> Graph::get_path(unsigned long &start, unsigned long &end) {
 }
 
 list<unsigned long> Graph::get_max_capacity_path(unsigned long &start, unsigned long &end) {
-    capacity_dijkstra(start);
-    get_path(start, end);
+    max_capacity_dijkstra(start);
+    return get_path(start, end);
 }
 
 
 
 list<unsigned long> Graph::get_min_distance_path(unsigned long &start, unsigned long &end) {
     min_distance_dijkstra(start);
-    get_path(start, end);
+    return get_path(start, end);
 }

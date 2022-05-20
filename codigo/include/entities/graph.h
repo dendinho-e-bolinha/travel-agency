@@ -90,7 +90,7 @@ class Graph {
          * 
          * @param start The starting point
          */
-        void capacity_dijkstra(unsigned long &start);
+        void max_capacity_dijkstra(unsigned long &start);
 
         /**
          * @brief Alters the graph to contain information about the minimum distance path
