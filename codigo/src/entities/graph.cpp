@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <set>
 
 #include "entities/graph.h"
 #include "max_heap.h"
@@ -7,31 +8,37 @@
 
 using namespace std;
 
-Edge::Edge(unsigned long destination, unsigned long capacity, unsigned long duration) {
+Edge::Edge(unsigned long origin, unsigned long destination, unsigned long capacity, unsigned long duration) {
+    this->origin = origin;
     this->destination = destination;
     this->capacity = capacity;
     this->duration = duration;
 }
 
-Edge::Edge(const Edge &Edge) : Edge(Edge.get_destination(), Edge.get_capacity(), Edge.get_duration()) {};
+Edge::Edge(const Edge &edge) : Edge(edge.get_origin(), edge.get_destination(), edge.get_capacity(), edge.get_duration()) {};
 
 
-Edge Edge::from_entry(vector<unsigned long> entry) {
+Edge Edge::from_entry(const FileEntry &entry) {
+    unsigned long origin = entry.at(0);
     unsigned long destination = entry.at(1);
     unsigned long capacity = entry.at(2);
     unsigned long duration = entry.at(3);
 
-    return Edge{destination, capacity, duration};
+    return Edge{origin, destination, capacity, duration};
 }
 
-vector<Edge> Edge::from_file(File file) {
+vector<Edge> Edge::from_file(const File &file) {
     vector<Edge> edges;
 
-    for (unsigned long i = 0; i < file.get_entries().size(); i++) {
-        edges.push_back(from_entry(file.get_entries().at(i)));
+    for (const FileEntry &entry : file.get_entries()) {
+        edges.push_back(from_entry(entry));
     }
 
     return edges;
+}
+
+unsigned long Edge::get_origin() const {
+    return origin;
 }
 
 unsigned long Edge::get_destination() const {
@@ -46,17 +53,32 @@ unsigned long Edge::get_duration() const {
     return duration;
 }
 
-
-Graph::Graph(vector<Node> nodes) {
-    this->nodes = nodes;
+bool Edge::is_active() const {
+    return active;
 }
 
-Graph::Graph(Graph &g) {
-    this->nodes = g.nodes;
+void Edge::set_active(bool active) {
+    this->active = active;
 }
 
-void Graph::max_capacity_dijkstra(unsigned long &start) {
-    for (unsigned long i = 0; i < nodes.size(); i++) {
+Graph::Graph(int n) : nodes(n + 1), n(n) {}
+
+Graph::Graph(const Graph &g) : nodes(g.nodes), edges(g.edges), n(g.n) {}
+
+void Graph::add_edge(const Edge &edge) {
+    if (edge.get_origin() == 0 || edge.get_destination() == 0) {
+        throw "Edge has origin or destination at 0";
+    }
+
+    unsigned long index = edges.size();
+    edges.push_back(edge);
+
+    nodes.at(edge.get_origin()).adj.push_back(index);
+    nodes.at(edge.get_destination()).adj.push_back(index);
+}
+
+void Graph::max_capacity_dijkstra(unsigned long start) {
+    for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
         nodes.at(i).capacity = 0;
@@ -64,14 +86,19 @@ void Graph::max_capacity_dijkstra(unsigned long &start) {
 
     nodes.at(start).capacity = 999999;
 
-    MaxHeap<int, unsigned long> maxh(nodes.size(), -1);
+    MaxHeap<int, unsigned long> maxh(n, -1);
     while (maxh.get_size() > 0) {
         unsigned int node = maxh.remove_max();
         nodes.at(node).visited = true;
 
-        for (const Edge &e : nodes[node].adj) {
-            unsigned long dest = e.get_destination();
-            unsigned long minCap = min(nodes[node].capacity, e.get_capacity());
+        for (const unsigned long &e : nodes[node].adj) {
+            const Edge &edge =  edges[e];
+            if (edge.get_origin() != node) {
+                continue;
+            }
+
+            unsigned long dest = edge.get_destination();
+            unsigned long minCap = min(nodes[node].capacity, edge.get_capacity());
             if (minCap > nodes[dest].capacity) {
                 nodes[dest].capacity = minCap;
                 nodes[dest].parent = node;
@@ -83,8 +110,8 @@ void Graph::max_capacity_dijkstra(unsigned long &start) {
     }
 }
 
-void Graph::min_distance_dijkstra(unsigned long &start) {
-        for (unsigned long i = 0; i < nodes.size(); i++) {
+void Graph::min_distance_dijkstra(unsigned long start) {
+    for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
         nodes.at(i).distance = 999999;
@@ -92,14 +119,19 @@ void Graph::min_distance_dijkstra(unsigned long &start) {
 
     nodes.at(start).distance = 0;
 
-    MinHeap<int, unsigned long> minh(nodes.size(), -1);
+    MinHeap<int, unsigned long> minh(n, -1);
     while (minh.get_size() > 0) {
         unsigned int node = minh.remove_min();
         nodes.at(node).visited = true;
 
-        for (const Edge &e : nodes[node].adj) {
-            unsigned long dest = e.get_destination();
-            unsigned long minDis = max(nodes[node].distance, e.get_capacity());
+        for (const unsigned long &e : nodes[node].adj) {
+            const Edge &edge =  edges[e];
+            if (edge.get_origin() != node) {
+                continue;
+            }
+
+            unsigned long dest = edge.get_destination();
+            unsigned long minDis = max(nodes[node].distance, edge.get_capacity());
             if (minDis > nodes[dest].distance) {
                 nodes[dest].distance = minDis;
                 nodes[dest].parent = node;
@@ -111,7 +143,7 @@ void Graph::min_distance_dijkstra(unsigned long &start) {
     }
 }
 
-list<unsigned long> Graph::get_path(unsigned long &start, unsigned long &end) {
+list<unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
     list<unsigned long> path;
 
     unsigned long currNode = end;
@@ -125,14 +157,117 @@ list<unsigned long> Graph::get_path(unsigned long &start, unsigned long &end) {
     return path;
 }
 
-list<unsigned long> Graph::get_max_capacity_path(unsigned long &start, unsigned long &end) {
+list<unsigned long> Graph::get_max_capacity_path(unsigned long start, unsigned long end) {
     max_capacity_dijkstra(start);
     return get_path(start, end);
 }
 
-
-
-list<unsigned long> Graph::get_min_distance_path(unsigned long &start, unsigned long &end) {
+list<unsigned long> Graph::get_min_distance_path(unsigned long start, unsigned long end) {
     min_distance_dijkstra(start);
     return get_path(start, end);
 }
+
+void Graph::biggest_duration(unsigned long start) {
+    for (unsigned long i = 1; i <= n; i++) {
+        Node &node = nodes[i];
+
+        node.parent = 0;
+        node.visited = false;
+
+        node.earliest_start = 0;
+        node.in_degree = 0;
+    }
+
+    for (Edge &edge : edges) {
+        if (edge.is_active()) {
+            Node &node = nodes[edge.get_destination()];
+            node.in_degree += 1;
+        }
+    }
+
+    queue<unsigned long> next;
+    next.push(start);
+
+    while (!next.empty()) {
+        unsigned long index = next.front(); next.pop();
+        Node &node = nodes[index];
+
+        node.visited = true;
+
+        for (unsigned long e : node.adj) {
+            const Edge &edge = edges[e];
+            if (!edge.is_active() || edge.get_origin() != index) {
+                continue;
+            }
+
+            Node &neighbor = nodes[edge.get_destination()];
+            unsigned long end = node.earliest_start + edge.get_duration();
+
+            if (neighbor.earliest_start < end) {
+                neighbor.earliest_start = end;
+                neighbor.parent = index;
+            }
+
+            neighbor.in_degree -= 1;
+            if (neighbor.in_degree == 0) {
+                next.push(edge.get_destination());
+            }
+        }
+    }
+}
+
+void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &activeEdges) {
+    for (Edge &edge : edges) {
+        pair<unsigned long, unsigned long> e = { edge.get_origin(), edge.get_destination() };
+        bool active = activeEdges.find(e) != activeEdges.end();
+
+        edge.set_active(active);
+    }
+}
+
+unsigned long Graph::get_earliest_meetup(const set<pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end) {
+    set_active_edges(activeEdges);
+    biggest_duration(start);
+
+    Node &destination = nodes[end];
+    if (!destination.visited || destination.in_degree > 0) {
+        return 0;
+    } else {
+        return destination.earliest_start;
+    }
+}
+
+list<pair<unsigned long, unsigned int>> Graph::get_waiting_periods(const set<pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end) {
+    set_active_edges(activeEdges);
+    biggest_duration(start);
+
+    list<pair<unsigned long, unsigned int>> waiting_periods;
+
+    for (unsigned long i = 1; i <= n; i++) {
+        Node &node = nodes[i];
+
+        unsigned long earliest_arrival = node.earliest_start;
+
+        for (unsigned long e : node.adj) {
+            const Edge &edge = edges[e];
+
+            if (!edge.is_active() || edge.get_destination() != i) {
+                continue;
+            }
+
+            const Node &previous = nodes[edge.get_origin()];
+            unsigned long arrival = previous.earliest_start + edge.get_duration();
+            if (arrival < earliest_arrival) {
+                earliest_arrival = arrival;
+            }
+        }
+
+        if (earliest_arrival < node.earliest_start) {
+            unsigned long wait = node.earliest_start - earliest_arrival;
+            waiting_periods.push_back({ i, wait });
+        }
+    }
+
+    return waiting_periods;
+}
+
