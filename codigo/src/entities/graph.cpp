@@ -139,6 +139,51 @@ void Graph::min_distance_dijkstra(unsigned long start) {
     }
 }
 
+void Graph::max_flux_increase_dijkstra(unsigned long start) {
+    for (unsigned long i = 1; i <= n; i++) {
+        nodes.at(i).visited = false;
+        nodes.at(i).parent = 0;
+        nodes.at(i).flux_increase = 0;
+    }
+
+    nodes.at(start).distance = 999999;
+
+    MaxHeap<int, unsigned long> maxh(n, -1);
+    while (maxh.get_size() > 0) {
+        unsigned int node = maxh.remove_max();
+        nodes.at(node).visited = true;
+
+        for (const unsigned long &e : nodes[node].outgoing) {
+            const Edge &edge = edges[e];
+
+            unsigned long dest = edge.get_destination();
+            unsigned long maxFluxIncrease = min(nodes[node].flux_increase, edge.get_capacity() - edge.get_flux());
+            if (maxFluxIncrease > nodes[dest].flux_increase) {
+                nodes[dest].flux_increase = maxFluxIncrease;
+                nodes[dest].parent = e;
+                
+                maxh.insert(dest, nodes[dest].flux_increase);
+                maxh.increase_key(dest, nodes[dest].flux_increase);
+            }
+        }
+
+        for (const unsigned long &e : nodes[node].incoming) {
+            const Edge &edge = edges[e];
+
+            unsigned long origin = edge.get_origin();
+            unsigned long maxFluxIncrease = min(nodes[node].flux_increase, edge.get_flux());
+            if (maxFluxIncrease > nodes[origin].flux_increase) {
+                nodes[origin].flux_increase = maxFluxIncrease;
+                nodes[origin].parent = e;
+                
+                maxh.insert(origin, nodes[origin].flux_increase);
+                maxh.increase_key(origin, nodes[origin].flux_increase);
+            }
+        }
+    }
+}
+
+
 list<unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
     list<unsigned long> path;
 
@@ -218,6 +263,33 @@ void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &acti
         bool active = activeEdges.find(e) != activeEdges.end();
 
         edge.set_active(active);
+    }
+}
+
+void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase) {
+    while (flux_increase > 0) {
+        max_flux_increase_dijkstra(start);
+        if (!nodes.at(end).visited) {
+            break;
+        }
+
+        unsigned long increment = nodes.at(end).flux_increase;
+
+        unsigned long curr = end;
+        while (curr != start) {
+            Node &curr_node = nodes.at(curr);
+            Edge &edge = edges.at(curr_node.parent);
+            
+            if (curr == edge.get_destination()) {
+                edge.set_flux(edge.get_flux() + increment);
+                curr = edge.get_origin();
+            } else {
+                edge.set_flux(edge.get_flux() - increment);
+                curr = edge.get_destination();
+            }
+        }
+
+        flux_increase -= min(flux_increase, increment); // prevent overflow
     }
 }
 

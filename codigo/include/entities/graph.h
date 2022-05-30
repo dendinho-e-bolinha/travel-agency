@@ -14,6 +14,8 @@ struct Node {
 
     unsigned long distance;
     unsigned long capacity;
+    
+    unsigned long flux_increase;
 
     unsigned long earliest_start;
     unsigned long in_degree;
@@ -30,6 +32,9 @@ class Edge {
 
     /** @brief The Edge' capacity */
     unsigned long capacity;
+
+    /** @brief The Edge's flux */
+    unsigned long flux;
 
     /** @brief The trip's duration */
     unsigned long duration;
@@ -74,11 +79,13 @@ class Edge {
         unsigned long get_origin() const;
         unsigned long get_destination() const;
         unsigned long get_capacity() const;
+        unsigned long get_flux() const;
         unsigned long get_duration() const;
         bool is_active() const;
 
         /** Setters */
         void set_active(bool active);
+        void set_flux(unsigned long flux);
 };
 
 class Graph {
@@ -132,6 +139,8 @@ class Graph {
          */
         void min_distance_dijkstra(unsigned long start);
 
+        void max_flux_increase_dijkstra(unsigned long start);
+
         /**
          * @brief Alters the graph to contain information about the biggest duration path
          * 
@@ -166,6 +175,12 @@ class Graph {
          */
         std::list<unsigned long> get_min_distance_path(unsigned long start, unsigned long end);
 
+
+        /**
+         * @brief 
+         * 
+         */
+        void ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase);
 
         /**
          * @brief Get the earliest time at which a group of people would meetup again at a given destination
