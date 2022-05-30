@@ -6,7 +6,8 @@
 #include "dataset.h"
 
 struct Node {
-    std::vector<unsigned long> adj;
+    std::vector<unsigned long> outgoing;
+    std::vector<unsigned long> incoming;
 
     bool visited;
     unsigned int parent;

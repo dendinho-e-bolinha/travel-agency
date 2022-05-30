@@ -73,8 +73,10 @@ void Graph::add_edge(const Edge &edge) {
     unsigned long index = edges.size();
     edges.push_back(edge);
 
-    nodes.at(edge.get_origin()).adj.push_back(index);
-    nodes.at(edge.get_destination()).adj.push_back(index);
+    nodes.at(edge.get_origin()).outgoing.push_back(index);
+    nodes.at(edge.get_destination()).incoming.push_back(index);
+
+    edges.at(index).set_active(true);
 }
 
 void Graph::max_capacity_dijkstra(unsigned long start) {
@@ -91,11 +93,8 @@ void Graph::max_capacity_dijkstra(unsigned long start) {
         unsigned int node = maxh.remove_max();
         nodes.at(node).visited = true;
 
-        for (const unsigned long &e : nodes[node].adj) {
+        for (const unsigned long &e : nodes[node].outgoing) {
             const Edge &edge =  edges[e];
-            if (edge.get_origin() != node) {
-                continue;
-            }
 
             unsigned long dest = edge.get_destination();
             unsigned long minCap = min(nodes[node].capacity, edge.get_capacity());
@@ -124,11 +123,8 @@ void Graph::min_distance_dijkstra(unsigned long start) {
         unsigned int node = minh.remove_min();
         nodes.at(node).visited = true;
 
-        for (const unsigned long &e : nodes[node].adj) {
+        for (const unsigned long &e : nodes[node].outgoing) {
             const Edge &edge =  edges[e];
-            if (edge.get_origin() != node) {
-                continue;
-            }
 
             unsigned long dest = edge.get_destination();
             unsigned long minDis = max(nodes[node].distance, edge.get_capacity());
@@ -194,9 +190,9 @@ void Graph::biggest_duration(unsigned long start) {
 
         node.visited = true;
 
-        for (unsigned long e : node.adj) {
+        for (unsigned long e : node.outgoing) {
             const Edge &edge = edges[e];
-            if (!edge.is_active() || edge.get_origin() != index) {
+            if (!edge.is_active()) {
                 continue;
             }
 
@@ -248,10 +244,10 @@ list<pair<unsigned long, unsigned int>> Graph::get_waiting_periods(const set<pai
 
         unsigned long earliest_arrival = node.earliest_start;
 
-        for (unsigned long e : node.adj) {
+        for (unsigned long e : node.incoming) {
             const Edge &edge = edges[e];
 
-            if (!edge.is_active() || edge.get_destination() != i) {
+            if (!edge.is_active()) {
                 continue;
             }
 
