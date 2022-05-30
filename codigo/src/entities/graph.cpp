@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <set>
+#include <limits>
 
 #include "entities/graph.h"
 #include "max_heap.h"
@@ -8,7 +9,7 @@
 
 using namespace std;
 
-Edge::Edge(unsigned long origin, unsigned long destination, unsigned long capacity, unsigned long duration) {
+Edge::Edge(unsigned long origin, unsigned long destination, unsigned long capacity, unsigned long duration): flow(0) {
     this->origin = origin;
     this->destination = destination;
     this->capacity = capacity;
@@ -139,11 +140,11 @@ void Graph::min_distance_dijkstra(unsigned long start) {
     }
 }
 
-void Graph::max_flux_increase_dijkstra(unsigned long start) {
+void Graph::max_flow_increase_dijkstra(unsigned long start) {
     for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
-        nodes.at(i).flux_increase = 0;
+        nodes.at(i).flow_increase = 0;
     }
 
     nodes.at(start).distance = 999999;
@@ -157,13 +158,13 @@ void Graph::max_flux_increase_dijkstra(unsigned long start) {
             const Edge &edge = edges[e];
 
             unsigned long dest = edge.get_destination();
-            unsigned long maxFluxIncrease = min(nodes[node].flux_increase, edge.get_capacity() - edge.get_flux());
-            if (maxFluxIncrease > nodes[dest].flux_increase) {
-                nodes[dest].flux_increase = maxFluxIncrease;
+            unsigned long maxFluxIncrease = min(nodes[node].flow_increase, edge.get_capacity() - edge.get_flow());
+            if (maxFluxIncrease > nodes[dest].flow_increase) {
+                nodes[dest].flow_increase = maxFluxIncrease;
                 nodes[dest].parent = e;
                 
-                maxh.insert(dest, nodes[dest].flux_increase);
-                maxh.increase_key(dest, nodes[dest].flux_increase);
+                maxh.insert(dest, nodes[dest].flow_increase);
+                maxh.increase_key(dest, nodes[dest].flow_increase);
             }
         }
 
@@ -171,13 +172,13 @@ void Graph::max_flux_increase_dijkstra(unsigned long start) {
             const Edge &edge = edges[e];
 
             unsigned long origin = edge.get_origin();
-            unsigned long maxFluxIncrease = min(nodes[node].flux_increase, edge.get_flux());
-            if (maxFluxIncrease > nodes[origin].flux_increase) {
-                nodes[origin].flux_increase = maxFluxIncrease;
+            unsigned long maxFluxIncrease = min(nodes[node].flow_increase, edge.get_flow());
+            if (maxFluxIncrease > nodes[origin].flow_increase) {
+                nodes[origin].flow_increase = maxFluxIncrease;
                 nodes[origin].parent = e;
                 
-                maxh.insert(origin, nodes[origin].flux_increase);
-                maxh.increase_key(origin, nodes[origin].flux_increase);
+                maxh.insert(origin, nodes[origin].flow_increase);
+                maxh.increase_key(origin, nodes[origin].flow_increase);
             }
         }
     }
@@ -266,14 +267,14 @@ void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &acti
     }
 }
 
-void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase) {
-    while (flux_increase > 0) {
-        max_flux_increase_dijkstra(start);
+void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flow_increase) {
+    while (flow_increase > 0) {
+        max_flow_increase_dijkstra(start);
         if (!nodes.at(end).visited) {
             break;
         }
 
-        unsigned long increment = nodes.at(end).flux_increase;
+        unsigned long increment = nodes.at(end).flow_increase;
 
         unsigned long curr = end;
         while (curr != start) {
@@ -281,17 +282,91 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
             Edge &edge = edges.at(curr_node.parent);
             
             if (curr == edge.get_destination()) {
-                edge.set_flux(edge.get_flux() + increment);
+                edge.set_flow(edge.get_flow() + increment);
                 curr = edge.get_origin();
             } else {
-                edge.set_flux(edge.get_flux() - increment);
+                edge.set_flow(edge.get_flow() - increment);
                 curr = edge.get_destination();
             }
         }
 
-        flux_increase -= min(flux_increase, increment); // prevent overflow
+        flow_increase -= min(flow_increase, increment); // prevent overflow
     }
 }
+
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_flow_path(unsigned long start, unsigned long end) {
+    list<tuple<unsigned long, unsigned long, unsigned long>> path;
+    if (!nodes.at(end).visited) {
+        return path;
+    }
+
+    for (Edge &edge : edges) {
+        if (edge.get_flow() > 0) {
+            path.push_back({ edge.get_origin(), edge.get_destination(), edge.get_flow() });
+        }
+    }
+
+    return path;
+}
+
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size) {
+    for (Edge &edge : edges) {
+        edge.set_flow(0);
+    }
+
+    ford_fulkerson(start, end, size);
+    return get_flow_path(start, end);
+}
+
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(list<tuple<unsigned long, unsigned long, unsigned long>> previous_route, unsigned long increment) {
+    for (Edge &edge : edges) {
+        edge.set_flow(0);
+    }
+
+    vector<unsigned long> in(n + 1), out(n + 1);
+
+    for (tuple<unsigned long, unsigned long, unsigned long> &tup : previous_route) {
+        auto [ origin, dest, flow ] = tup;
+
+        for (unsigned long e : nodes.at(origin).outgoing) {
+            Edge &edge = edges.at(e);
+            if (edge.get_destination() == dest) {
+                in.at(edge.get_destination()) += 1;
+                out.at(edge.get_origin()) += 1;
+
+                edge.set_flow(flow);
+            }
+        }
+    }
+
+    unsigned long start = 0, end = 0;
+    for (size_t i = 1; i <= n; i++) {
+        if (in.at(i) == 0) {
+            start = i;
+        }
+
+        if (out.at(i) == 0) {
+            end = i;
+        }
+    }
+
+    if (start == 0 || end == 0) {
+        return {};
+    }
+
+    ford_fulkerson(start, end, increment);
+    return get_flow_path(start, end);
+}
+
+list<tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size() {
+        for (Edge &edge : edges) {
+        edge.set_flow(0);
+    }
+
+    ford_fulkerson(start, end, numeric_limits<unsigned long>::max());
+    return get_flow_path(start, end);
+}
+
 
 unsigned long Graph::get_earliest_meetup(const set<pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end) {
     set_active_edges(activeEdges);

@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-#include "graph.h"
+#include "entities/graph.h"
 
 using FileEntry = std::vector<unsigned long>;
 
