@@ -4,9 +4,10 @@
 #include <string>
 #include <fstream>
 
-#include "entities/graph.h"
-
 using FileEntry = std::vector<unsigned long>;
+class File;
+
+#include "entities/graph.h"
 
 /** @brief Manages file operations */
 class File {
@@ -58,12 +59,5 @@ public:
      * @return A vector holding all the entries
      */
     std::vector<FileEntry> get_entries() const;
-
-    /**
-     * @brief Reads all the edges from the target file
-     * 
-     * @return A vector containing all the Edges
-     */
-    std::vector<Edge> read_edges() const;
 };
 

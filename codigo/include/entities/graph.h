@@ -3,7 +3,11 @@
 #include <vector>
 #include <list>
 #include <set>
-#include "../dataset.h"
+#include <tuple>
+
+class Graph;
+
+#include "dataset.h"
 
 struct Node {
     std::vector<unsigned long> outgoing;
@@ -12,11 +16,10 @@ struct Node {
     bool visited;
     unsigned int parent;
 
+    /** @brief Search parameters */
     unsigned long distance;
     unsigned long capacity;
-
     unsigned long flow_increase;
-
     unsigned long earliest_start;
     unsigned long in_degree;
 };
@@ -92,9 +95,9 @@ class Graph {
     
     unsigned long n;
     std::vector<Node> nodes;
-    std::vector<Edge> edges;
 
     public:
+        std::vector<Edge> edges;
 
         /**
          * @brief Construct a new Graph object
@@ -133,11 +136,11 @@ class Graph {
         void max_capacity_dijkstra(unsigned long start);
 
         /**
-         * @brief Alters the graph to contain information about the minimum distance path
+         * @brief Alters the graph to contain information about the pareto optimal paths
          * 
          * @param start The starting point
          */
-        void min_distance_dijkstra(unsigned long start);
+        void pareto_optimal_dijkstra(unsigned long start, bool max_capacity);
 
         void max_flow_increase_dijkstra(unsigned long start);
 
@@ -173,7 +176,7 @@ class Graph {
          * @param end The ending point
          * @return A list containing all the nodes in the optimal path
          */
-        std::list<unsigned long> get_min_distance_path(unsigned long start, unsigned long end);
+        std::list<unsigned long> get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity);
 
         
         /**

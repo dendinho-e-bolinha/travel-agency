@@ -62,6 +62,14 @@ void Edge::set_active(bool active) {
     this->active = active;
 }
 
+unsigned long Edge::get_flow() const {
+    return flow;
+}
+
+void Edge::set_flow(unsigned long flow) {
+    this->flow = flow;
+}
+
 Graph::Graph(int n) : nodes(n + 1), n(n) {}
 
 Graph::Graph(const Graph &g) : nodes(g.nodes), edges(g.edges), n(g.n) {}
@@ -76,8 +84,6 @@ void Graph::add_edge(const Edge &edge) {
 
     nodes.at(edge.get_origin()).outgoing.push_back(index);
     nodes.at(edge.get_destination()).incoming.push_back(index);
-
-    edges.at(index).set_active(true);
 }
 
 void Graph::max_capacity_dijkstra(unsigned long start) {
@@ -90,14 +96,20 @@ void Graph::max_capacity_dijkstra(unsigned long start) {
     nodes.at(start).capacity = 999999;
 
     MaxHeap<int, unsigned long> maxh(n, -1);
+    maxh.insert(start, nodes[start].capacity);
+
     while (maxh.get_size() > 0) {
         unsigned int node = maxh.remove_max();
         nodes.at(node).visited = true;
 
         for (const unsigned long &e : nodes[node].outgoing) {
-            const Edge &edge =  edges[e];
+            const Edge &edge = edges[e];
 
             unsigned long dest = edge.get_destination();
+            if (nodes[dest].visited) {
+                continue;
+            }
+
             unsigned long minCap = min(nodes[node].capacity, edge.get_capacity());
             if (minCap > nodes[dest].capacity) {
                 nodes[dest].capacity = minCap;
@@ -110,31 +122,46 @@ void Graph::max_capacity_dijkstra(unsigned long start) {
     }
 }
 
-void Graph::min_distance_dijkstra(unsigned long start) {
+void Graph::pareto_optimal_dijkstra(unsigned long start, bool max_capacity) {
+
     for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
+        nodes.at(i).capacity = 0;
         nodes.at(i).distance = 999999;
     }
 
+    nodes.at(start).capacity = 999999;
     nodes.at(start).distance = 0;
 
-    MinHeap<int, unsigned long> minh(n, -1);
-    while (minh.get_size() > 0) {
-        unsigned int node = minh.remove_min();
+    MaxHeap<int, pair<long, long>> maxh(n, -1);
+    maxh.insert(start, 
+        max_capacity ? make_pair(nodes[start].capacity, -nodes[start].distance) : make_pair(-nodes[start].distance, nodes[start].capacity));
+
+    while (maxh.get_size() > 0) {
+        unsigned int node = maxh.remove_max();
         nodes.at(node).visited = true;
 
         for (const unsigned long &e : nodes[node].outgoing) {
             const Edge &edge =  edges[e];
 
             unsigned long dest = edge.get_destination();
-            unsigned long minDis = max(nodes[node].distance, edge.get_capacity());
-            if (minDis > nodes[dest].distance) {
-                nodes[dest].distance = minDis;
+            if (nodes[dest].visited) {
+                continue;
+            }
+
+            unsigned long minCap = min(nodes[node].capacity, edge.get_capacity());
+
+            pair<long, long> possibleWeight = max_capacity ? make_pair(minCap, -nodes[node].distance - 1) : make_pair(-nodes[node].distance - 1, minCap);
+            pair<long, long> currWeight = max_capacity ? make_pair(nodes[dest].capacity, -nodes[dest].distance) : make_pair(-nodes[dest].distance, nodes[dest].capacity);
+            
+            if (possibleWeight > currWeight) {
+                nodes[dest].capacity = minCap;
+                nodes[dest].distance = nodes[node].distance + 1;
                 nodes[dest].parent = node;
                 
-                minh.insert(dest, nodes[dest].distance);
-                minh.decrease_key(dest, nodes[dest].distance);
+                maxh.insert(dest, possibleWeight);
+                maxh.increase_key(dest, possibleWeight);
             }
         }
     }
@@ -147,9 +174,11 @@ void Graph::max_flow_increase_dijkstra(unsigned long start) {
         nodes.at(i).flow_increase = 0;
     }
 
-    nodes.at(start).distance = 999999;
+    nodes.at(start).flow_increase = 999999;
 
     MaxHeap<int, unsigned long> maxh(n, -1);
+    maxh.insert(start, nodes.at(start).flow_increase);
+
     while (maxh.get_size() > 0) {
         unsigned int node = maxh.remove_max();
         nodes.at(node).visited = true;
@@ -158,9 +187,13 @@ void Graph::max_flow_increase_dijkstra(unsigned long start) {
             const Edge &edge = edges[e];
 
             unsigned long dest = edge.get_destination();
-            unsigned long maxFluxIncrease = min(nodes[node].flow_increase, edge.get_capacity() - edge.get_flow());
-            if (maxFluxIncrease > nodes[dest].flow_increase) {
-                nodes[dest].flow_increase = maxFluxIncrease;
+            if (nodes[dest].visited) {
+                continue;
+            }
+
+            unsigned long maxFlowIncrease = min(nodes[node].flow_increase, edge.get_capacity() - edge.get_flow());
+            if (maxFlowIncrease > nodes[dest].flow_increase) {
+                nodes[dest].flow_increase = maxFlowIncrease;
                 nodes[dest].parent = e;
                 
                 maxh.insert(dest, nodes[dest].flow_increase);
@@ -187,6 +220,9 @@ void Graph::max_flow_increase_dijkstra(unsigned long start) {
 
 list<unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
     list<unsigned long> path;
+    if (!nodes[end].visited) {
+        return path;
+    }
 
     unsigned long currNode = end;
     while (nodes[currNode].parent != 0) {
@@ -204,8 +240,8 @@ list<unsigned long> Graph::get_max_capacity_path(unsigned long start, unsigned l
     return get_path(start, end);
 }
 
-list<unsigned long> Graph::get_min_distance_path(unsigned long start, unsigned long end) {
-    min_distance_dijkstra(start);
+list<unsigned long> Graph::get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity) {
+    pareto_optimal_dijkstra(start, max_capacity);
     return get_path(start, end);
 }
 
@@ -278,6 +314,7 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
 
         unsigned long curr = end;
         while (curr != start) {
+            cout << curr << endl;
             Node &curr_node = nodes.at(curr);
             Edge &edge = edges.at(curr_node.parent);
             
@@ -289,17 +326,15 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
                 curr = edge.get_destination();
             }
         }
+        cout << curr << endl;
 
+        cout << endl << increment << endl << endl;
         flow_increase -= min(flow_increase, increment); // prevent overflow
     }
 }
 
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_flow_path(unsigned long start, unsigned long end) {
     list<tuple<unsigned long, unsigned long, unsigned long>> path;
-    if (!nodes.at(end).visited) {
-        return path;
-    }
-
     for (Edge &edge : edges) {
         if (edge.get_flow() > 0) {
             path.push_back({ edge.get_origin(), edge.get_destination(), edge.get_flow() });
@@ -358,7 +393,7 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_in
     return get_flow_path(start, end);
 }
 
-list<tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size() {
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_group_of_max_size(unsigned long start, unsigned long end) {
         for (Edge &edge : edges) {
         edge.set_flow(0);
     }

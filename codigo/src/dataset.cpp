@@ -34,18 +34,6 @@ bool File::read_header(ifstream &file, char delim) {
 }
 
 bool File::read_body(ifstream &file, char delim) {
-
-    for (unsigned long i = 0; i < this->get_header().size(); i++) {
-        string data;
-        FileEntry entry;
-
-        while(getline(file, data, delim)) {
-            entry.push_back(stoi(data));
-        }
-
-        this->entries.push_back(entry);
-    }
-
     string line;
     
     while(getline(file, line))  {
@@ -69,15 +57,4 @@ vector<unsigned long> File::get_header() const {
 
 vector<FileEntry> File::get_entries() const {
     return entries;    
-}
-
-vector<Edge> File::read_edges() const {
-    vector<Edge> edges;
-
-    for (FileEntry entry : this->get_entries()) {
-        Edge delivery = Edge::from_entry(entry);
-        edges.push_back(delivery);
-    }
-
-    return edges;
 }
