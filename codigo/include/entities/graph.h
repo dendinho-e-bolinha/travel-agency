@@ -94,10 +94,11 @@ class Edge {
 };
 
 class Graph {
+    unsigned long n;
+    std::vector<Node> nodes;
+    std::vector<Edge> edges;
+    
     public:
-        unsigned long n;
-        std::vector<Node> nodes;
-        std::vector<Edge> edges;
 
         /**
          * @brief Construct a new Graph object
