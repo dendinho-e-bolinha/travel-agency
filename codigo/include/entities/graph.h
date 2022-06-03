@@ -84,10 +84,8 @@ class Edge {
         unsigned long get_capacity() const;
         unsigned long get_flow() const;
         unsigned long get_duration() const;
-        bool is_active() const;
 
         /** Setters */
-        void set_active(bool active);
         void set_flow(unsigned long flow);
 
         // bool operator<(const Edge &other) const;
@@ -97,7 +95,7 @@ class Graph {
     unsigned long n;
     std::vector<Node> nodes;
     std::vector<Edge> edges;
-    
+
     public:
 
         /**
@@ -121,13 +119,6 @@ class Graph {
          * @param edge The edge to add to this graph
          */
         void add_edge(const Edge &edge);
-
-        /**
-         * @brief Set the active edges for this graph
-         * 
-         * @param activeEdges a set of edges that should be kept active
-         */
-        void set_active_edges(const std::set<std::pair<unsigned long, unsigned long>> &activeEdges);
 
         /**
          * @brief Alters the graph to contain information about the maximum capacity path
@@ -190,7 +181,7 @@ class Graph {
 
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size);
 
-        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_with_increment(std::list<std::tuple<unsigned long, unsigned long, unsigned long>> previous_route, unsigned long increment);
+        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment);
 
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size(unsigned long start, unsigned long end);
 
@@ -202,7 +193,7 @@ class Graph {
          * @param end The ending point
          * @return The time at which the group would meetup again
          */
-        unsigned long get_earliest_meetup(const std::set<std::pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end);
+        unsigned long get_earliest_meetup(unsigned long start, unsigned long end);
 
         /**
          * @brief Get the places and durations of where people will have to wait for others in order to proceed with their trip
@@ -211,6 +202,6 @@ class Graph {
          * @param end The ending point
          * @return A list of indexes of where the person will have to wait and the respective durations
          */
-        std::list<std::pair<unsigned long, unsigned int>> get_waiting_periods(const std::set<std::pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end);
+        std::list<std::pair<unsigned long, unsigned int>> get_waiting_periods(unsigned long start, unsigned long end);
 
 };

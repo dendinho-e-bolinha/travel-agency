@@ -255,7 +255,7 @@ void Graph::biggest_duration(unsigned long start) {
     }
 
     for (Edge &edge : edges) {
-        if (edge.is_active()) {
+        if (edge.get_flow() > 0) {
             Node &node = nodes[edge.get_destination()];
             node.in_degree += 1;
         }
@@ -272,7 +272,7 @@ void Graph::biggest_duration(unsigned long start) {
 
         for (unsigned long e : node.outgoing) {
             const Edge &edge = edges[e];
-            if (!edge.is_active()) {
+            if (edge.get_flow() == 0) {
                 continue;
             }
 
@@ -293,15 +293,6 @@ void Graph::biggest_duration(unsigned long start) {
                 next.push(edge.get_destination());
             }
         }
-    }
-}
-
-void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &activeEdges) {
-    for (Edge &edge : edges) {
-        pair<unsigned long, unsigned long> e = { edge.get_origin(), edge.get_destination() };
-        bool active = activeEdges.find(e) != activeEdges.end();
-
-        edge.set_active(active);
     }
 }
 
@@ -350,46 +341,10 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_gro
         edge.set_flow(0);
     }
 
-    ford_fulkerson(start, end, size);
-    return get_flow_path(start, end);
+    return get_path_with_increment(start, end, size);
 }
 
-list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(list<tuple<unsigned long, unsigned long, unsigned long>> previous_route, unsigned long increment) {
-    for (Edge &edge : edges) {
-        edge.set_flow(0);
-    }
-
-    vector<unsigned long> in(n + 1), out(n + 1);
-
-    for (tuple<unsigned long, unsigned long, unsigned long> &tup : previous_route) {
-        auto [ origin, dest, flow ] = tup;
-
-        for (unsigned long e : nodes.at(origin).outgoing) {
-            Edge &edge = edges.at(e);
-            if (edge.get_destination() == dest) {
-                in.at(edge.get_destination()) += 1;
-                out.at(edge.get_origin()) += 1;
-
-                edge.set_flow(flow);
-            }
-        }
-    }
-
-    unsigned long start = 0, end = 0;
-    for (size_t i = 1; i <= n; i++) {
-        if (in.at(i) == 0) {
-            start = i;
-        }
-
-        if (out.at(i) == 0) {
-            end = i;
-        }
-    }
-
-    if (start == 0 || end == 0) {
-        return {};
-    }
-
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment) {
     ford_fulkerson(start, end, increment);
     return get_flow_path(start, end);
 }
@@ -399,13 +354,11 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_gro
         edge.set_flow(0);
     }
 
-    ford_fulkerson(start, end, numeric_limits<unsigned long>::max());
-    return get_flow_path(start, end);
+    return get_path_with_increment(start, end, numeric_limits<unsigned long>::max());
 }
 
 
-unsigned long Graph::get_earliest_meetup(const set<pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end) {
-    set_active_edges(activeEdges);
+unsigned long Graph::get_earliest_meetup(unsigned long start, unsigned long end) {
     biggest_duration(start);
 
     Node &destination = nodes[end];
@@ -416,8 +369,7 @@ unsigned long Graph::get_earliest_meetup(const set<pair<unsigned long, unsigned 
     }
 }
 
-list<pair<unsigned long, unsigned int>> Graph::get_waiting_periods(const set<pair<unsigned long, unsigned long>> &activeEdges, unsigned long start, unsigned long end) {
-    set_active_edges(activeEdges);
+list<pair<unsigned long, unsigned int>> Graph::get_waiting_periods(unsigned long start, unsigned long end) {
     biggest_duration(start);
 
     list<pair<unsigned long, unsigned int>> waiting_periods;
@@ -430,7 +382,7 @@ list<pair<unsigned long, unsigned int>> Graph::get_waiting_periods(const set<pai
         for (unsigned long e : node.incoming) {
             const Edge &edge = edges[e];
 
-            if (!edge.is_active()) {
+            if (edge.get_flow() == 0) {
                 continue;
             }
 
