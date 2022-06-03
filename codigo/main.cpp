@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "entities/graph.h"
 #include "dataset.h"
 
@@ -13,11 +14,12 @@ int main() {
     for (Edge &edge : Edge::from_file(file)) {
         graph.add_edge(edge);
     }
-    cout << "Source,Target,Label,Capacity,Flow,Duration\n";
     graph.get_path_for_group_of_max_size(8, 12);
     
+    ofstream stream("result.csv");
+    stream << "Source,Target,Label,Capacity,Flow,Duration,Step,Increment\n";
     for (Edge &edge : graph.edges) {
-        cout << edge.get_origin() <<','<< edge.get_destination() <<',' << edge.get_flow()<<'/'<< edge.get_capacity() << ',' <<edge.get_capacity() <<',' << edge.get_flow() <<','<< edge.get_duration() << endl;
+        stream << edge.get_origin() <<','<< edge.get_destination() <<',' << edge.get_flow()<<'/'<< edge.get_capacity() << ',' <<edge.get_capacity() <<',' << edge.get_flow() <<','<< edge.get_duration() << ",0,0" << endl;
     }
 
     

@@ -2,6 +2,7 @@
 #include <queue>
 #include <set>
 #include <limits>
+#include <fstream>
 
 #include "entities/graph.h"
 #include "max_heap.h"
@@ -304,7 +305,13 @@ void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &acti
 }
 
 void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flow_increase) {
+    ofstream stream("steps.csv");
+    stream << "Source,Target,Step,Increment" << endl;
+    int step = 0;
+
     while (flow_increase > 0) {
+        step++;
+
         max_flow_increase_dijkstra(start);
         if (!nodes.at(end).visited) {
             break;
@@ -314,9 +321,11 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
 
         unsigned long curr = end;
         while (curr != start) {
-            cout << curr << endl;
+            
             Node &curr_node = nodes.at(curr);
             Edge &edge = edges.at(curr_node.parent);
+
+            stream << edge.get_origin() << ',' << edge.get_destination() << ',' << step << ',' << increment << endl;
             
             if (curr == edge.get_destination()) {
                 edge.set_flow(edge.get_flow() + increment);
@@ -326,9 +335,8 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
                 curr = edge.get_destination();
             }
         }
-        cout << curr << endl;
 
-        cout << endl << increment << endl << endl;
+
         flow_increase -= min(flow_increase, increment); // prevent overflow
     }
 }
