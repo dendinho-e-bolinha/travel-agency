@@ -11,3 +11,5 @@ add_executable(travel
     src/entities/graph.cpp
     src/dataset.cpp
 )
+
+add_definitions(-DDEBUG)

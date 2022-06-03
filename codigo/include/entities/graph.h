@@ -89,14 +89,14 @@ class Edge {
         /** Setters */
         void set_active(bool active);
         void set_flow(unsigned long flow);
+
+        // bool operator<(const Edge &other) const;
 };
 
 class Graph {
-    
-    unsigned long n;
-    std::vector<Node> nodes;
-
     public:
+        unsigned long n;
+        std::vector<Node> nodes;
         std::vector<Edge> edges;
 
         /**

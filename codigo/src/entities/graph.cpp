@@ -3,7 +3,6 @@
 #include <set>
 #include <limits>
 #include <fstream>
-
 #include "entities/graph.h"
 #include "max_heap.h"
 #include "min_heap.h"
@@ -70,6 +69,21 @@ unsigned long Edge::get_flow() const {
 void Edge::set_flow(unsigned long flow) {
     this->flow = flow;
 }
+
+// bool Edge::operator<(const Edge &other) const {
+//     return origin < other.origin || 
+//         (origin == other.origin && 
+//             (destination < other.destination ||
+//                 (destination == other.destination &&
+//                     (capacity < other.capacity ||
+//                         (capacity == other.capacity &&
+//                             duration < other.duration
+//                         )
+//                     )
+//                 )
+//             )
+//         );
+// }
 
 Graph::Graph(int n) : nodes(n + 1), n(n) {}
 
@@ -280,6 +294,10 @@ void Graph::biggest_duration(unsigned long start) {
             }
 
             Node &neighbor = nodes[edge.get_destination()];
+            if (neighbor.visited) {
+                continue;
+            }
+            
             unsigned long end = node.earliest_start + edge.get_duration();
 
             if (neighbor.earliest_start < end) {
@@ -305,12 +323,16 @@ void Graph::set_active_edges(const set<pair<unsigned long, unsigned long>> &acti
 }
 
 void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flow_increase) {
-    ofstream stream("steps.csv");
+    #ifdef DEBUG
+    ofstream stream("flow_steps.csv");
     stream << "Source,Target,Step,Increment" << endl;
     int step = 0;
+    #endif
 
     while (flow_increase > 0) {
+        #ifdef DEBUG
         step++;
+        #endif
 
         max_flow_increase_dijkstra(start);
         if (!nodes.at(end).visited) {
@@ -325,8 +347,10 @@ void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long
             Node &curr_node = nodes.at(curr);
             Edge &edge = edges.at(curr_node.parent);
 
+            #ifdef DEBUG
             stream << edge.get_origin() << ',' << edge.get_destination() << ',' << step << ',' << increment << endl;
-            
+            #endif
+
             if (curr == edge.get_destination()) {
                 edge.set_flow(edge.get_flow() + increment);
                 curr = edge.get_origin();
