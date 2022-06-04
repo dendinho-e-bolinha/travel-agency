@@ -11,6 +11,8 @@ class UI {
     bool groups_separation = false;
     Graph graph;
     bool is_running = true;
+    bool two_point_one_executed = false;
+    bool two_point_three_executed = false;
 
 
 

@@ -58,12 +58,14 @@ string UI::choose_file_menu() {
     string user_choice = read_value<string>("Please choose the dataset file: ", "Invalid filename [1, 2, ..., 10]", [&](const string filename) {
         stringstream ss(filename);
         int num;
-        if (ss >> num)
+        if (ss >> num) {
             if (num < 1 || num > 10)
                 return false;
+        } else {
+            return false;
+        }
 
         ss.clear();
-        // cout << "DIR: " << system("pwd") << endl; 
         ss << DATASET_PATH << "in" << setfill('0') << setw(2) << num << setfill(' ') << "_b.txt";
 
         fn = ss.str();
@@ -98,37 +100,69 @@ Menu UI::get_separation_menu() {
 
     MenuBlock scenario_options;
     scenario_options.add_option("[Cenário 1] Determinar um encaminhamento para um grupo, dada a sua dimensão", [this]() {
+        this->two_point_one_executed = true;
         std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
 
         list<unsigned long> lst = graph.get_max_capacity_path(start_end_nodes.first, start_end_nodes.second);
 
         for (auto it = lst.begin(); it != lst.end(); ++it) {
-            if (it == lst.end()--)
-                cout << *it;
+            if (it == --lst.end())
+                cout << *it << endl;
             else
                 cout << *it << " -> ";
         }
     });
 
-    scenario_options.add_option("[Cenário 2] Corrigir um encaminhamento, se necessário, para que a dimensão do grupo possa aumentar de um número de unidades dado", [this]() {
-        // list<tuple<unsigned long, unsigned long, unsigned long>> lst = graph.get
+    if (two_point_one_executed) {
+        scenario_options.add_option("[Cenário 2] Corrigir um encaminhamento, se necessário, para que a dimensão do grupo possa aumentar de um número de unidades dado", [this]() {
+            std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
 
-    });
+            unsigned long increment = read_value<unsigned long>("Choose the increment value: ", "Invalid start", [&](const unsigned long &start) {
+                return start > 0;
+            });
+
+            list<tuple<unsigned long, unsigned long, unsigned long>> lst = graph.get_path_with_increment(start_end_nodes.first, start_end_nodes.second, increment);
+
+            for (auto it = lst.begin(); it != lst.end(); ++it) {
+                auto [origin, destination, flow] = *it;
+                cout << "[ " << origin << " -> " << destination << " / " << flow << " ]" << endl;
+        }
+            
+    });}
 
     scenario_options.add_option("[Cenário 3] Determinar a dimensão máxima do grupo e um encaminhamento.", [this]() {
-        std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+        this->two_point_three_executed = true;
 
+        std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+        list<unsigned long> lst = graph.get_max_capacity_path(start_end_nodes.first, start_end_nodes.second);
+
+        for (auto it = lst.begin(); it != lst.end(); ++it) {
+            if (it == --lst.end())
+                cout << *it << endl;
+            else
+                cout << *it << " -> ";
+        }
     });
 
-    scenario_options.add_option("[Cenário 4] Partindo de um encaminhamento que constitui um grafo acíclico, determinar quando é que o grupo se reuniria novamente no destino, no mínimo.", [this]() {
-        std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+    if (two_point_three_executed) {
+        scenario_options.add_option("[Cenário 4] Partindo de um encaminhamento que constitui um grafo acíclico, determinar quando é que o grupo se reuniria novamente no destino, no mínimo.", [this]() {
+            std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+            unsigned long earliest_meetup = graph.get_earliest_meetup(start_end_nodes.first, start_end_nodes.second);
 
-    });
 
-    scenario_options.add_option("[Cenário 5] Admitindo que os elementos que saem de um mesmo local partem desse local à mesma hora (e o mais cedo possível), indicar o tempo máximo de espera e os locais em que haveria elementos que esperam esse tempo.", [this]() {
-        std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+            cout << "Earliest time at which a group of people would meetup again: " << earliest_meetup << endl;
+        });
 
-    });
+        scenario_options.add_option("[Cenário 5] Admitindo que os elementos que saem de um mesmo local partem desse local à mesma hora (e o mais cedo possível), indicar o tempo máximo de espera e os locais em que haveria elementos que esperam esse tempo.", [this]() {
+            std::pair<unsigned long, unsigned long> start_end_nodes = get_start_and_ending_points();
+            std::list<std::pair<unsigned long, unsigned int>> earliest_meetup = graph.get_waiting_periods(start_end_nodes.first, start_end_nodes.second);
+
+            for (auto it = lst.begin(); it != lst.end(); ++it) {
+                auto [place, duration] = *it;
+                cout << "[ place: " << place << " ] (duration: " << duration << ")" << endl;
+            }
+
+    });}
 
     scenario.add_block(scenario_options);
     return scenario;
