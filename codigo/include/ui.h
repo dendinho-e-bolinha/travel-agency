@@ -8,7 +8,6 @@
 
 class UI {
     std::string filename;
-    bool groups_separation = false;
     Graph graph;
     bool is_running = true;
     bool two_point_one_executed = false;
@@ -29,7 +28,6 @@ class UI {
      * @return Menu 
      */
     Menu get_scenario_menu();
-
 
     Menu get_separation_menu();
 
