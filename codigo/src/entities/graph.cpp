@@ -165,6 +165,10 @@ void Graph::pareto_optimal_dijkstra(unsigned long start, bool max_capacity) {
     }
 }
 
+unsigned long Graph::size() {
+    return n;
+}
+
 void Graph::max_flow_increase_dijkstra(unsigned long start) {
     for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;

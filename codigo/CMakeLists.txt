@@ -10,6 +10,8 @@ add_executable(travel
     main.cpp
     src/entities/graph.cpp
     src/dataset.cpp
+    src/ui.cpp
+    src/interact.cpp
 )
 
 add_definitions(-DDEBUG)

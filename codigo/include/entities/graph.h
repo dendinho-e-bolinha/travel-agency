@@ -88,7 +88,8 @@ class Edge {
         /** Setters */
         void set_flow(unsigned long flow);
 
-        // bool operator<(const Edge &other) const;
+        bool is_active() const;
+        void set_active(bool active);
 };
 
 class Graph {
@@ -97,6 +98,8 @@ class Graph {
     std::vector<Edge> edges;
 
     public:
+
+        Graph() {};
 
         /**
          * @brief Construct a new Graph object
@@ -126,6 +129,8 @@ class Graph {
          * @param start The starting point
          */
         void max_capacity_dijkstra(unsigned long start);
+
+        unsigned long size();
 
         /**
          * @brief Alters the graph to contain information about the pareto optimal paths
@@ -177,12 +182,16 @@ class Graph {
          */
         void ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase);
 
+        // origin, destination, flow
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_flow_path(unsigned long start, unsigned long end);
 
+        // origin, destination, flow
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size);
 
+        // origin, destination, flow
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment);
 
+        // origin, destination, flow
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size(unsigned long start, unsigned long end);
 
 
