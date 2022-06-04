@@ -207,9 +207,9 @@ void Graph::max_flow_increase_dijkstra(unsigned long start) {
             const Edge &edge = edges[e];
 
             unsigned long origin = edge.get_origin();
-            unsigned long maxFluxIncrease = min(nodes[node].flow_increase, edge.get_flow());
-            if (maxFluxIncrease > nodes[origin].flow_increase) {
-                nodes[origin].flow_increase = maxFluxIncrease;
+            unsigned long maxFlowIncrease = min(nodes[node].flow_increase, edge.get_flow());
+            if (maxFlowIncrease > nodes[origin].flow_increase) {
+                nodes[origin].flow_increase = maxFlowIncrease;
                 nodes[origin].parent = e;
                 
                 maxh.insert(origin, nodes[origin].flow_increase);
@@ -300,7 +300,7 @@ void Graph::biggest_duration(unsigned long start) {
     }
 }
 
-void Graph::ford_fulkerson(unsigned long start, unsigned long end, unsigned long flow_increase) {
+void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long flow_increase) {
     while (flow_increase > 0) {
         max_flow_increase_dijkstra(start);
         if (!nodes.at(end).visited) {
@@ -349,7 +349,7 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_gro
 }
 
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment) {
-    ford_fulkerson(start, end, increment);
+    edmonds_karp(start, end, increment);
     return get_flow_path(start, end);
 }
 

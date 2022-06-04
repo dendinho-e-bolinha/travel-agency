@@ -36,7 +36,7 @@ class Edge {
     /** @brief The Edge' capacity */
     unsigned long capacity;
 
-    /** @brief The Edge's flux */
+    /** @brief The Edge's flow */
     unsigned long flow;
 
     /** @brief The trip's duration */
@@ -139,6 +139,11 @@ class Graph {
          */
         void pareto_optimal_dijkstra(unsigned long start, bool max_capacity);
 
+        /**
+         * @brief Alters the graph to contain information about the path with the maximum flow increase
+         * 
+         * @param start The starting point
+         */
         void max_flow_increase_dijkstra(unsigned long start);
 
         /**
@@ -177,21 +182,50 @@ class Graph {
 
         
         /**
-         * @brief 
+         * @brief Increases the flow in the graph by a specified amount
          * 
+         * @param start The starting point 
+         * @param end The ending point
+         * @param flow_increase The amount to increase the flow
          */
-        void ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase);
+        void edmonds_karp(unsigned long start, unsigned long end, unsigned long flow_increase);
 
-        // origin, destination, flow
+        /**
+         * @brief Reads the flow path from the graph
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @return A list containing all the start and end nodes and their respective flows in the current state
+         */
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_flow_path(unsigned long start, unsigned long end);
 
-        // origin, destination, flow
+        /**
+         * @brief Gets the path from the graph for a group of certain size
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @param size The size of the group
+         * @return A list containing all the start and end nodes and their respective flows in the current state
+         */
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size);
 
-        // origin, destination, flow
+        /**
+         * @brief Gets the path with a certain increment
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @param increment The increment value
+         * @return A list containing all the start and end nodes and their respective flows in the current state
+         */
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment);
 
-        // origin, destination, flow
+        /**
+         * @brief Gets the path for a group with the max possible size
+         * 
+         * @param start The starting point
+         * @param end The ending point
+         * @return A list containing all the start and end nodes and their respective flows in the current state
+         */
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size(unsigned long start, unsigned long end);
 
 
