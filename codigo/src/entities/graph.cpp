@@ -3,7 +3,6 @@
 #include <limits>
 #include "entities/graph.h"
 #include "max_heap.h"
-#include "min_heap.h"
 
 using namespace std;
 
