@@ -88,8 +88,6 @@ class Edge {
         /** Setters */
         void set_flow(unsigned long flow);
 
-        bool is_active() const;
-        void set_active(bool active);
 };
 
 class Graph {
