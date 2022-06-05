@@ -138,7 +138,7 @@ class Graph {
         void pareto_optimal_dijkstra(unsigned long start, bool max_capacity);
 
         /**
-         * @brief Alters the graph to contain information about the path with the maximum flow increase
+         * @brief Alters the graph to contain information about the shortest paths and their maximum flow increase
          * 
          * @param start The starting point
          */

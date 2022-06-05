@@ -7,7 +7,6 @@
 #include <string>
 
 class UI {
-    std::string filename;
     Graph graph;
     bool is_running = true;
     bool two_point_one_executed = false;
@@ -18,7 +17,7 @@ class UI {
      * 
      * @return true if the file exists, false otherwise
      */
-    std::string choose_file_menu();
+    std::string choose_file();
 
     /**
      * @brief Gets the scenario the user chose
@@ -47,7 +46,7 @@ class UI {
      * 
      * @return std::pair<unsigned long, unsigned long> 
      */
-    std::pair<unsigned long, unsigned long> get_start_and_ending_points();
+    std::pair<unsigned long, unsigned long> choose_starting_and_ending_nodes();
 
     public:
         /**

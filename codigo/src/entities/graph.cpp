@@ -52,14 +52,6 @@ unsigned long Edge::get_duration() const {
 }
 
 
-bool Edge::is_active() const {
-    return active;
-}
-
-void Edge::set_active(bool active) {
-    this->active = active;
-}
-
 
 unsigned long Edge::get_flow() const {
     return flow;
