@@ -17,7 +17,7 @@
 
 using namespace std;
 
-UI::UI() {
+UI::UI(bool sort) : sort(sort) {
     bool is_running = true;
 
     string filename = choose_file();
@@ -89,20 +89,22 @@ Menu UI::get_separation_menu() {
 
         list<tuple<unsigned long, unsigned long, unsigned long>> lst = graph.get_path_for_group_of_size(start_end_nodes.first, start_end_nodes.second, size);
 
-        lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
-            auto [origin1, destination1, flow1] = t1;
-            auto [origin2, destination2, flow2] = t2;
+        if (sort) {
+            lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
+                auto [origin1, destination1, flow1] = t1;
+                auto [origin2, destination2, flow2] = t2;
 
-            if (origin1 == origin2) {
-                if (destination1 == destination2) {
-                    return flow1 < flow2;
+                if (origin1 == origin2) {
+                    if (destination1 == destination2) {
+                        return flow1 < flow2;
+                    }
+                    
+                    return destination1 < destination2;
                 }
                 
-                return destination1 < destination2;
-            }
-            
-            return origin1 < origin2;
-        });
+                return origin1 < origin2;
+            });
+        }
 
         unsigned long max_capacity = 0;
 
@@ -128,20 +130,22 @@ Menu UI::get_separation_menu() {
 
             list<tuple<unsigned long, unsigned long, unsigned long>> lst = graph.get_path_with_increment(start_end_nodes.first, start_end_nodes.second, increment);
 
-            lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
-                auto [origin1, destination1, flow1] = t1;
-                auto [origin2, destination2, flow2] = t2;
+            if (sort) {
+                lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
+                    auto [origin1, destination1, flow1] = t1;
+                    auto [origin2, destination2, flow2] = t2;
 
-                if (origin1 == origin2) {
-                     if (destination1 == destination2) {
-                         return flow1 < flow2;
-                     }
-                     
-                     return destination1 < destination2;
-                 }
-                 
-                 return origin1 < origin2;
-            });
+                    if (origin1 == origin2) {
+                        if (destination1 == destination2) {
+                            return flow1 < flow2;
+                        }
+                        
+                        return destination1 < destination2;
+                    }
+                    
+                    return origin1 < origin2;
+                });
+            }
 
             unsigned long max_capacity = 0;
 
@@ -163,20 +167,22 @@ Menu UI::get_separation_menu() {
         std::pair<unsigned long, unsigned long> start_end_nodes = choose_starting_and_ending_nodes();
         list<tuple<unsigned long, unsigned long, unsigned long>> lst = graph.get_path_for_group_of_max_size(start_end_nodes.first, start_end_nodes.second);
 
-        lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
-            auto [origin1, destination1, flow1] = t1;
-            auto [origin2, destination2, flow2] = t2;
+        if (sort) {
+            lst.sort([](tuple<unsigned long, unsigned long, unsigned long> t1, tuple<unsigned long, unsigned long, unsigned long> t2) {
+                auto [origin1, destination1, flow1] = t1;
+                auto [origin2, destination2, flow2] = t2;
 
-            if (origin1 == origin2) {
-                 if (destination1 == destination2) {
-                     return flow1 < flow2;
-                 }
-                     
-                 return destination1 < destination2;
-             }
-                 
-             return origin1 < origin2;
-        });
+                if (origin1 == origin2) {
+                    if (destination1 == destination2) {
+                        return flow1 < flow2;
+                    }
+                        
+                    return destination1 < destination2;
+                }
+                    
+                return origin1 < origin2;
+            });
+        }
 
         unsigned long max_capacity = 0;
 

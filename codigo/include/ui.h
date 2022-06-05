@@ -11,6 +11,8 @@ class UI {
     bool is_running = true;
     bool scenario_two_executed = false;
 
+    bool sort;
+
     /**
      * @brief Lets the user pick the file where to get the data from
      * 
@@ -53,5 +55,5 @@ class UI {
          */
         void start();
 
-        UI();
+        UI(bool sort = true);
 };
