@@ -54,7 +54,7 @@ void UI::start() {
 string UI::choose_file() {
     string user_choice = read_value<GetLine>("Please choose the dataset file: ", "File not found", [](const string filename) {
         ifstream infile(filename);
-        return infile.is_open();
+        return infile.is_open() && infile.ignore(1).good();
     });
 
     return user_choice;
