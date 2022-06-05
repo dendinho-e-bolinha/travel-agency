@@ -9,8 +9,7 @@
 class UI {
     Graph graph;
     bool is_running = true;
-    bool two_point_one_executed = false;
-    bool two_point_three_executed = false;
+    bool scenario_two_executed = false;
 
     /**
      * @brief Lets the user pick the file where to get the data from

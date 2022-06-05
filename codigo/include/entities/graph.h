@@ -158,7 +158,7 @@ class Graph {
          * @param end The ending point
          * @return A list containing all the nodes in the path
          */
-        std::list<unsigned long> get_path(unsigned long start, unsigned long end);
+        std::tuple<std::list<unsigned long>, unsigned long, unsigned long> get_path(unsigned long start, unsigned long end);
 
         /**
          * @brief Calculates the path that holds the most people in a group
@@ -167,7 +167,7 @@ class Graph {
          * @param end The ending point
          * @return A list containing all the nodes in the optimal path
          */
-        std::list<unsigned long> get_max_capacity_path(unsigned long start, unsigned long end);
+        std::tuple<std::list<unsigned long>, unsigned long, unsigned long> get_max_capacity_path(unsigned long start, unsigned long end);
 
         /**
          * @brief Calculates the path that requires least bus transfers
@@ -176,7 +176,7 @@ class Graph {
          * @param end The ending point
          * @return A list containing all the nodes in the optimal path
          */
-        std::list<unsigned long> get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity);
+        std::tuple<std::list<unsigned long>, unsigned long, unsigned long> get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity);
 
         
         /**
