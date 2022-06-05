@@ -5,8 +5,12 @@
 using namespace std;
 
 int main() {
-    UI ui;
-    ui.start();
+    try {
+        UI ui;
+        ui.start();
+    } catch (exception ignored) {
+        return 1;
+    }
  
     return 0;
 }
