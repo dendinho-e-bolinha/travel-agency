@@ -206,7 +206,7 @@ Menu UI::get_separation_menu() {
             cout << "\nEarliest time at which a group of people would meetup again: " << earliest_meetup << endl << endl;
         });
 
-        scenario_options.add_option("[Scenario 5] Determine the maximum waiting time and the places where there would be elements that wait for that time, assuming that the elements that leave the same location depart from that location at the same time (and as soon as possible), ", [this]() {
+        scenario_options.add_option("[Scenario 2.5] Determine the maximum waiting time and the places where there would be elements that wait for that time, assuming that the elements that leave the same location depart from that location at the same time (and as soon as possible), ", [this]() {
             std::pair<unsigned long, unsigned long> start_end_nodes = choose_starting_and_ending_nodes();
             std::list<std::pair<unsigned long, unsigned int>> lst = graph.get_waiting_periods(start_end_nodes.first, start_end_nodes.second);
 
