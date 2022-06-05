@@ -52,6 +52,7 @@ unsigned long Edge::get_duration() const {
     return duration;
 }
 
+
 bool Edge::is_active() const {
     return active;
 }
@@ -59,6 +60,7 @@ bool Edge::is_active() const {
 void Edge::set_active(bool active) {
     this->active = active;
 }
+
 
 unsigned long Edge::get_flow() const {
     return flow;
@@ -165,55 +167,61 @@ void Graph::pareto_optimal_dijkstra(unsigned long start, bool max_capacity) {
     }
 }
 
+
 unsigned long Graph::size() {
     return n;
 }
 
-void Graph::max_flow_increase_dijkstra(unsigned long start) {
+void Graph::max_flow_increase_bfs(unsigned long start) {
     for (unsigned long i = 1; i <= n; i++) {
         nodes.at(i).visited = false;
         nodes.at(i).parent = 0;
         nodes.at(i).flow_increase = 0;
     }
 
+    queue<unsigned long> next;
+    next.push(start);
+    
     nodes.at(start).flow_increase = 999999;
 
-    MaxHeap<int, unsigned long> maxh(n, -1);
-    maxh.insert(start, nodes.at(start).flow_increase);
+    while (!next.empty()) {
+        unsigned long curr = next.front(); next.pop();
+        Node &curr_node = nodes.at(curr);
 
-    while (maxh.get_size() > 0) {
-        unsigned int node = maxh.remove_max();
-        nodes.at(node).visited = true;
+        curr_node.visited = true;
 
-        for (const unsigned long &e : nodes[node].outgoing) {
-            const Edge &edge = edges[e];
+        for (unsigned long e : curr_node.outgoing) {
+            Edge &edge = edges.at(e);
+            Node &destination = nodes.at(edge.get_destination());
 
-            unsigned long dest = edge.get_destination();
-            if (nodes[dest].visited) {
+            if (destination.visited) {
                 continue;
             }
 
-            unsigned long maxFlowIncrease = min(nodes[node].flow_increase, edge.get_capacity() - edge.get_flow());
-            if (maxFlowIncrease > nodes[dest].flow_increase) {
-                nodes[dest].flow_increase = maxFlowIncrease;
-                nodes[dest].parent = e;
-                
-                maxh.insert(dest, nodes[dest].flow_increase);
-                maxh.increase_key(dest, nodes[dest].flow_increase);
+            unsigned long flow_increase = min(curr_node.flow_increase, edge.get_capacity() - edge.get_flow());
+            if (flow_increase > 0) {
+                destination.flow_increase = flow_increase;
+                destination.parent = e;
+
+                next.push(edge.get_destination());
             }
+            
         }
 
-        for (const unsigned long &e : nodes[node].incoming) {
-            const Edge &edge = edges[e];
+        for (unsigned long e : curr_node.incoming) {
+            Edge &edge = edges.at(e);
+            Node &origin = nodes.at(edge.get_origin());
 
-            unsigned long origin = edge.get_origin();
-            unsigned long maxFlowIncrease = min(nodes[node].flow_increase, edge.get_flow());
-            if (maxFlowIncrease > nodes[origin].flow_increase) {
-                nodes[origin].flow_increase = maxFlowIncrease;
-                nodes[origin].parent = e;
-                
-                maxh.insert(origin, nodes[origin].flow_increase);
-                maxh.increase_key(origin, nodes[origin].flow_increase);
+            if (origin.visited) {
+                continue;
+            }
+
+            unsigned long flow_increase = min(curr_node.flow_increase, edge.get_flow());
+            if (flow_increase > 0) {
+                origin.flow_increase = flow_increase;
+                origin.parent = e;
+
+                next.push(edge.get_origin());
             }
         }
     }
@@ -300,9 +308,10 @@ void Graph::biggest_duration(unsigned long start) {
     }
 }
 
-void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long flow_increase) {
+void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long flow_increase) {    
     while (flow_increase > 0) {
-        max_flow_increase_dijkstra(start);
+        max_flow_increase_bfs(start);
+
         if (!nodes.at(end).visited) {
             break;
         }
@@ -329,7 +338,8 @@ void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long f
     }
 }
 
-list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_flow_path(unsigned long start, unsigned long end) {
+
+list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_flow_path() {
     list<tuple<unsigned long, unsigned long, unsigned long>> path;
     for (Edge &edge : edges) {
         if (edge.get_flow() > 0) {
@@ -349,8 +359,11 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_gro
 }
 
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment) {
-    edmonds_karp(start, end, increment);
-    return get_flow_path(start, end);
+    if (start != end) {
+        edmonds_karp(start, end, increment);
+    }
+    
+    return get_flow_path();
 }
 
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_group_of_max_size(unsigned long start, unsigned long end) {

@@ -100,7 +100,7 @@ class Graph {
     public:
 
         Graph() {};
-
+  
         /**
          * @brief Construct a new Graph object
          * 
@@ -226,6 +226,18 @@ class Graph {
          * @param end The ending point
          * @return A list containing all the start and end nodes and their respective flows in the current state
          */
+
+         * @brief 
+         * 
+         */
+        void edmonds_karp(unsigned long start, unsigned long end, unsigned long flux_increase);
+
+        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_flow_path();
+
+        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size);
+
+        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment);
+
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_max_size(unsigned long start, unsigned long end);
 
 
