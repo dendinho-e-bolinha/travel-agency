@@ -17,7 +17,13 @@ This project uses [cmake](https://cmake.org/). Assuming it's installed and prope
 
 ## Running
 
-Simply run the executable generated in the last section. Don't forget to put your data files in a folder named `input`.
+Simply run the executable generated in the last section.
+
+### Not sorting the results
+
+By default, the flow results are sorted, but, if you don't want them sorted, you can use the `--no-sort` option.
+
+Example: `travel --no-sort`
 
 ## Unit info
 
