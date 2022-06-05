@@ -134,7 +134,7 @@ class Graph {
          */
         void pareto_optimal_dijkstra(unsigned long start, bool max_capacity);
 
-        void max_flow_increase_dijkstra(unsigned long start);
+        void max_flow_increase_bfs(unsigned long start);
 
         /**
          * @brief Alters the graph to contain information about the biggest duration path
@@ -175,9 +175,9 @@ class Graph {
          * @brief 
          * 
          */
-        void ford_fulkerson(unsigned long start, unsigned long end, unsigned long flux_increase);
+        void edmonds_karp(unsigned long start, unsigned long end, unsigned long flux_increase);
 
-        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_flow_path(unsigned long start, unsigned long end);
+        std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_flow_path();
 
         std::list<std::tuple<unsigned long, unsigned long, unsigned long>> get_path_for_group_of_size(unsigned long start, unsigned long end, unsigned long size);
 
