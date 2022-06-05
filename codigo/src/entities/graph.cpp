@@ -3,7 +3,6 @@
 #include <limits>
 #include "entities/graph.h"
 #include "max_heap.h"
-#include "min_heap.h"
 
 using namespace std;
 
@@ -51,6 +50,8 @@ unsigned long Edge::get_capacity() const {
 unsigned long Edge::get_duration() const {
     return duration;
 }
+
+
 
 unsigned long Edge::get_flow() const {
     return flow;
@@ -155,6 +156,11 @@ void Graph::pareto_optimal_dijkstra(unsigned long start, bool max_capacity) {
             }
         }
     }
+}
+
+
+unsigned long Graph::size() {
+    return n;
 }
 
 void Graph::max_flow_increase_bfs(unsigned long start) {
@@ -296,6 +302,7 @@ void Graph::biggest_duration(unsigned long start) {
 void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long flow_increase) {    
     while (flow_increase > 0) {
         max_flow_increase_bfs(start);
+
         if (!nodes.at(end).visited) {
             break;
         }
@@ -322,6 +329,7 @@ void Graph::edmonds_karp(unsigned long start, unsigned long end, unsigned long f
     }
 }
 
+
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_flow_path() {
     list<tuple<unsigned long, unsigned long, unsigned long>> path;
     for (Edge &edge : edges) {
@@ -342,7 +350,6 @@ list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_for_gro
 }
 
 list<tuple<unsigned long, unsigned long, unsigned long>> Graph::get_path_with_increment(unsigned long start, unsigned long end, unsigned long increment) {
-
     if (start != end) {
         edmonds_karp(start, end, increment);
     }
