@@ -219,10 +219,10 @@ void Graph::max_flow_increase_bfs(unsigned long start) {
 }
 
 
-list<unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
+tuple<list<unsigned long>, unsigned long, unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
     list<unsigned long> path;
     if (!nodes[end].visited) {
-        return path;
+        return { path, 0, 0 };
     }
 
     unsigned long currNode = end;
@@ -233,15 +233,15 @@ list<unsigned long> Graph::get_path(unsigned long start, unsigned long end) {
 
     path.push_front(currNode);
 
-    return path;
+    return { path, nodes[end].capacity, nodes[end].distance };
 }
 
-list<unsigned long> Graph::get_max_capacity_path(unsigned long start, unsigned long end) {
+tuple<list<unsigned long>, unsigned long, unsigned long> Graph::get_max_capacity_path(unsigned long start, unsigned long end) {
     max_capacity_dijkstra(start);
     return get_path(start, end);
 }
 
-list<unsigned long> Graph::get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity) {
+tuple<list<unsigned long>, unsigned long, unsigned long> Graph::get_pareto_optimal_path(unsigned long start, unsigned long end, bool max_capacity) {
     pareto_optimal_dijkstra(start, max_capacity);
     return get_path(start, end);
 }
