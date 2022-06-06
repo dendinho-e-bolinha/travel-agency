@@ -99,24 +99,25 @@ $(document).ready(function(){initNavTree('ui_8h_source.html',''); initResizable(
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="class_u_i.html">    9</a></span><span class="keyword">class </span><a class="code hl_class" href="class_u_i.html">UI</a> {</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <a class="code hl_class" href="class_graph.html">Graph</a> graph;</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordtype">bool</span> is_running = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">bool</span> two_point_one_executed = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordtype">bool</span> two_point_three_executed = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_u_i.html#a4edfc141bfb941ce5fec46327d8ad28b">   20</a></span>    std::string <a class="code hl_function" href="class_u_i.html#a4edfc141bfb941ce5fec46327d8ad28b">choose_file</a>();</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_u_i.html#a485a3a5f72f395ae6c19d78cba5b1689">   27</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#a485a3a5f72f395ae6c19d78cba5b1689">get_scenario_menu</a>();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_u_i.html#a28a9b7869188925ed9929392f881e8f4">   34</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#a28a9b7869188925ed9929392f881e8f4">get_separation_menu</a>();</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_u_i.html#af48dc2dca0767f5324f4f1ae3bccdfbb">   41</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#af48dc2dca0767f5324f4f1ae3bccdfbb">get_non_separation_menu</a>();</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="class_u_i.html#a59c12ff4fc37a489aede437211829ee7">   49</a></span>    std::pair&lt;unsigned long, unsigned long&gt; <a class="code hl_function" href="class_u_i.html#a59c12ff4fc37a489aede437211829ee7">choose_starting_and_ending_nodes</a>();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_u_i.html#a6dceb4c77315203f2cd106723d67e26d">   55</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_u_i.html#a6dceb4c77315203f2cd106723d67e26d">start</a>();</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_class" href="class_u_i.html">UI</a>();</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">bool</span> scenario_two_executed = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordtype">bool</span> sort;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="class_u_i.html#a4edfc141bfb941ce5fec46327d8ad28b">   21</a></span>    std::string <a class="code hl_function" href="class_u_i.html#a4edfc141bfb941ce5fec46327d8ad28b">choose_file</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="class_u_i.html#a485a3a5f72f395ae6c19d78cba5b1689">   28</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#a485a3a5f72f395ae6c19d78cba5b1689">get_scenario_menu</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_u_i.html#a28a9b7869188925ed9929392f881e8f4">   35</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#a28a9b7869188925ed9929392f881e8f4">get_separation_menu</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_u_i.html#af48dc2dca0767f5324f4f1ae3bccdfbb">   42</a></span>    <a class="code hl_class" href="class_menu.html">Menu</a> <a class="code hl_function" href="class_u_i.html#af48dc2dca0767f5324f4f1ae3bccdfbb">get_non_separation_menu</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="class_u_i.html#a59c12ff4fc37a489aede437211829ee7">   50</a></span>    std::pair&lt;unsigned long, unsigned long&gt; <a class="code hl_function" href="class_u_i.html#a59c12ff4fc37a489aede437211829ee7">choose_starting_and_ending_nodes</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="class_u_i.html#a6dceb4c77315203f2cd106723d67e26d">   56</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_u_i.html#a6dceb4c77315203f2cd106723d67e26d">start</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_class" href="class_u_i.html">UI</a>(<span class="keywordtype">bool</span> sort = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
 <div class="ttc" id="aclass_graph_html"><div class="ttname"><a href="class_graph.html">Graph</a></div><div class="ttdef"><b>Definition:</b> graph.h:93</div></div>
 <div class="ttc" id="aclass_menu_html"><div class="ttname"><a href="class_menu.html">Menu</a></div><div class="ttdef"><b>Definition:</b> interact.h:47</div></div>
 <div class="ttc" id="aclass_u_i_html"><div class="ttname"><a href="class_u_i.html">UI</a></div><div class="ttdef"><b>Definition:</b> ui.h:9</div></div>
